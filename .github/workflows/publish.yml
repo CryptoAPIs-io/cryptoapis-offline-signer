@@ -62,7 +62,7 @@ jobs:
             exit 1
           fi
 
+      # Auth via npm trusted publishing (OIDC) — configured on npmjs.org for this
+      # repo + workflow + environment. No NPM_TOKEN needed; provenance is automatic.
       - name: Publish with provenance
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
