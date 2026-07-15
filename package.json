@@ -1,0 +1,101 @@
+{
+  "name": "@cryptoapis-io/offline-signer",
+  "version": "0.1.0",
+  "description": "Offline, local transaction signing for EVM, UTXO, Tron, XRP, Kaspa and Solana — no API calls, no API key, the private key never leaves your process.",
+  "license": "MIT",
+  "author": "Crypto APIs, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CryptoAPIs-io/cryptoapis-offline-signer.git"
+  },
+  "homepage": "https://cryptoapis.io/guides/accept-crypto-payments",
+  "keywords": [
+    "cryptoapis",
+    "blockchain",
+    "offline-signing",
+    "transaction-signing",
+    "non-custodial",
+    "evm",
+    "bitcoin",
+    "utxo",
+    "tron",
+    "xrp",
+    "kaspa",
+    "solana"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./evm": {
+      "types": "./dist/evm.d.ts",
+      "import": "./dist/evm.js"
+    },
+    "./utxo": {
+      "types": "./dist/utxo.d.ts",
+      "import": "./dist/utxo.js"
+    },
+    "./tron": {
+      "types": "./dist/tron.d.ts",
+      "import": "./dist/tron.js"
+    },
+    "./xrp": {
+      "types": "./dist/xrp.d.ts",
+      "import": "./dist/xrp.js"
+    },
+    "./kaspa": {
+      "types": "./dist/kaspa.d.ts",
+      "import": "./dist/kaspa.js"
+    },
+    "./solana": {
+      "types": "./dist/solana.d.ts",
+      "import": "./dist/solana.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@bitgo/utxo-lib": "^11.24.0",
+    "@solana/web3.js": "^1.98.4",
+    "bitcoinjs-lib": "^7.0.0",
+    "bitcore-lib-cash": "^8.25.47",
+    "blake2b": "^2.1.4",
+    "bs58": "^6.0.0",
+    "ecpair": "^2.1.0",
+    "elliptic": "^6.6.1",
+    "ethers": "^6.13.0",
+    "kaspa-wasm": "^0.13.0",
+    "tiny-secp256k1": "^2.2.3",
+    "xrpl": "^4.6.0",
+    "zcashcore-lib": "^0.13.19",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "rimraf": "^6.0.1",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  },
+  "scripts": {
+    "build": "rimraf dist && tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "clean": "rimraf dist",
+    "test:evm": "tsx scripts/test-evm-sign.ts",
+    "test:utxo": "tsx scripts/test-utxo-sign.ts",
+    "prepublishOnly": "npm run build"
+  }
+}
