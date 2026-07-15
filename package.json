@@ -6,7 +6,10 @@
   "author": "Crypto APIs, Inc.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/CryptoAPIs-io/cryptoapis-offline-signer.git"
+    "url": "git+https://github.com/CryptoAPIs-io/cryptoapis-offline-signer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/CryptoAPIs-io/cryptoapis-offline-signer/issues"
   },
   "homepage": "https://cryptoapis.io/guides/accept-crypto-payments",
   "keywords": [
