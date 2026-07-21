@@ -1,6 +1,6 @@
 {
   "name": "@cryptoapis-io/offline-signer",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Offline, local transaction signing for EVM, UTXO, Tron, XRP, Kaspa and Solana — no API calls, no API key, the private key never leaves your process.",
   "license": "MIT",
   "author": "Crypto APIs, Inc.",

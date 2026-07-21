@@ -17,7 +17,7 @@ export async function xrpSignFromDetails(
     };
 }
 
-async function xrpSignUnsignedHex(
+export async function xrpSignUnsignedHex(
     input: XrpSignUnsignedHexInput
 ): Promise<{ signedTransactionHex: string; signedTransactionHash: string }> {
     const xrpl = await import("xrpl");

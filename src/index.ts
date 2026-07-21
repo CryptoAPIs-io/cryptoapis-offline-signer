@@ -29,7 +29,7 @@ import type {
 } from "./chains/evm/schema.js";
 import type { UtxoSignFromDetailsInput, UtxoSignUnsignedHexInput } from "./chains/utxo/schema.js";
 import type { TronSignFromDetailsInput } from "./chains/tron/schema.js";
-import type { XrpSignFromDetailsInput } from "./chains/xrp/schema.js";
+import type { XrpSignFromDetailsInput, XrpSignUnsignedHexInput } from "./chains/xrp/schema.js";
 import type { KaspaSignFromDetailsInput } from "./chains/kaspa/schema.js";
 import type { SvmSignPartialInput } from "./chains/svm/schema.js";
 
@@ -61,6 +61,9 @@ export async function tronSignFromDetails(input: TronSignFromDetailsInput) {
 export async function xrpSignFromDetails(input: XrpSignFromDetailsInput) {
     return (await import("./chains/xrp/index.js")).xrpSignFromDetails(input);
 }
+export async function xrpSignUnsignedHex(input: XrpSignUnsignedHexInput) {
+    return (await import("./chains/xrp/index.js")).xrpSignUnsignedHex(input);
+}
 
 // ---- Kaspa ----
 export async function kaspaSignFromDetails(input: KaspaSignFromDetailsInput) {
@@ -81,7 +84,7 @@ export type {
 export type { UtxoSignFromDetailsInput, UtxoSignUnsignedHexInput } from "./chains/utxo/schema.js";
 export type { TronSignFromDetailsInput } from "./chains/tron/schema.js";
 export type { TronSignedTransaction } from "./chains/tron/index.js";
-export type { XrpSignFromDetailsInput } from "./chains/xrp/schema.js";
+export type { XrpSignFromDetailsInput, XrpSignUnsignedHexInput } from "./chains/xrp/schema.js";
 export type { KaspaSignFromDetailsInput } from "./chains/kaspa/schema.js";
 export type { SvmSignPartialInput } from "./chains/svm/schema.js";
 
