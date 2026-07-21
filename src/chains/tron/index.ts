@@ -68,7 +68,7 @@ export function tronSignFromDetails(input: TronSignFromDetailsInput): {
     };
 }
 
-function tronSignUnsignedHex(input: TronSignUnsignedHexInput): { signedTransactionHex: string } {
+export function tronSignUnsignedHex(input: TronSignUnsignedHexInput): { signedTransactionHex: string } {
     const hex = input.unsignedTransactionHex.startsWith("0x") ? input.unsignedTransactionHex.slice(2) : input.unsignedTransactionHex;
     const key = input.privateKey.startsWith("0x") ? input.privateKey.slice(2) : input.privateKey;
     const rawDataBytes = parseTransactionRawDataHex(hex);
