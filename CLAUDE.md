@@ -1,6 +1,6 @@
 # CLAUDE.md — @cryptoapis-io/offline-signer
 
-Public, MIT-licensed library for **offline transaction signing** across EVM, UTXO, Tron, XRP, Kaspa and Solana. Signing only — no network, no API key, the private key stays in-process. Pairs with the CryptoAPIs REST API (prepare → **sign here** → broadcast).
+Public, MIT-licensed library for **offline transaction signing** across EVM, UTXO, Tron, XRP, Kaspa, Solana and Tezos. Signing only — no network, no API key, the private key stays in-process. Pairs with the CryptoAPIs REST API (prepare → **sign here** → broadcast).
 
 ## What this is (and is not)
 
@@ -19,7 +19,9 @@ src/
 scripts/              tsx smoke tests (test-evm-sign, test-utxo-sign)
 ```
 
-Public API is defined by the `exports` map in `package.json`: root `.` plus `/evm`, `/utxo`, `/tron`, `/xrp`, `/kaspa`, `/solana`.
+Public API is defined by the `exports` map in `package.json`: root `.` plus `/evm`, `/utxo`, `/tron`, `/xrp`, `/kaspa`, `/solana`, `/tezos`.
+
+**Tezos** (`chains/tezos/`): signs a forged operation (e.g. prepare-transactions' `forgedOperation`) with `blake2b-256(0x03 ‖ forged)` on the key's curve via `@noble/curves` (ECDSA with `prehash: false` — noble v2 otherwise SHA-256s the input). It decodes and re-forges the bytes with `@taquito/local-forging` first and refuses anything but reveal/transaction ops from the key's own address. `scripts/test-tezos-sign.ts` asserts signatures are byte-identical to Taquito's `InMemorySigner` for all three curves.
 
 ## Conventions
 
@@ -40,6 +42,7 @@ Public API is defined by the `exports` map in `package.json`: root `.` plus `/ev
 npm run build && npm run typecheck
 npm run test:evm     # recovers the sender from the signed tx; asserts it matches
 npm run test:utxo    # signs across all six UTXO chains
+npm run test:tezos   # tz1/tz2/tz3 vs Taquito, refusal checks
 ```
 
 Both smoke tests import from the **built `dist/`**, so run `build` first. They use throwaway keys and touch no network.

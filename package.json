@@ -1,6 +1,6 @@
 {
   "name": "@cryptoapis-io/offline-signer",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "Offline, local transaction signing for EVM, UTXO, Tron, XRP, Kaspa and Solana — no API calls, no API key, the private key never leaves your process.",
   "license": "MIT",
   "author": "Crypto APIs, Inc.",
@@ -61,7 +61,11 @@
       "types": "./dist/solana.d.ts",
       "import": "./dist/solana.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./tezos": {
+      "types": "./dist/tezos.d.ts",
+      "import": "./dist/tezos.js"
+    }
   },
   "files": [
     "dist",
@@ -73,7 +77,11 @@
   },
   "dependencies": {
     "@bitgo/utxo-lib": "^11.24.0",
+    "@noble/curves": "^2.4.0",
+    "@noble/hashes": "^2.4.0",
     "@solana/web3.js": "^1.98.4",
+    "@taquito/local-forging": "^25.0.0",
+    "@taquito/utils": "^25.0.0",
     "bitcoinjs-lib": "^7.0.0",
     "bitcore-lib-cash": "^8.25.47",
     "blake2b": "^2.1.4",
@@ -88,6 +96,7 @@
     "zod": "^3.25.0"
   },
   "devDependencies": {
+    "@taquito/signer": "^25.0.0",
     "@types/node": "^22.10.0",
     "rimraf": "^6.0.1",
     "tsx": "^4.19.0",
@@ -99,6 +108,7 @@
     "clean": "rimraf dist",
     "test:evm": "tsx scripts/test-evm-sign.ts",
     "test:utxo": "tsx scripts/test-utxo-sign.ts",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "test:tezos": "tsx scripts/test-tezos-sign.ts"
   }
 }

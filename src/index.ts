@@ -1,7 +1,7 @@
 /**
  * @cryptoapis-io/offline-signer
  *
- * Local, offline transaction signing for EVM, UTXO, Tron, XRP, Kaspa and Solana.
+ * Local, offline transaction signing for EVM, UTXO, Tron, XRP, Kaspa, Solana and Tezos.
  * Every signer takes a private key plus an unsigned transaction (or the fields
  * to build one) and returns a signed payload. Nothing here makes a network call
  * and nothing needs an API key — the private key never leaves the process.
@@ -32,6 +32,7 @@ import type { TronSignFromDetailsInput, TronSignUnsignedHexInput } from "./chain
 import type { XrpSignFromDetailsInput, XrpSignUnsignedHexInput } from "./chains/xrp/schema.js";
 import type { KaspaSignFromDetailsInput } from "./chains/kaspa/schema.js";
 import type { SvmSignPartialInput } from "./chains/svm/schema.js";
+import type { TezosSignForgedOperationInput } from "./chains/tezos/schema.js";
 
 // ---- EVM ----
 export async function evmSignUnsignedHex(input: EvmSignUnsignedHexInput) {
@@ -106,3 +107,11 @@ export type {
     UtxoNetworkName,
     XrpNetworkName,
 } from "./internal/blockchains.js";
+
+// ---- Tezos ----
+export async function tezosSignForgedOperation(input: TezosSignForgedOperationInput) {
+    return (await import("./chains/tezos/index.js")).tezosSignForgedOperation(input);
+}
+export async function tezosKeyInfo(secretKey: string) {
+    return (await import("./chains/tezos/index.js")).tezosKeyInfo(secretKey);
+}
