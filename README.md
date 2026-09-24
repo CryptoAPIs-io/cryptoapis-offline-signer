@@ -1,6 +1,6 @@
 # @cryptoapis-io/offline-signer
 
-Offline, local transaction signing for **EVM, UTXO, Tron, XRP, Kaspa and Solana**.
+Offline, local transaction signing for **EVM, UTXO, Tron, XRP, Kaspa, Solana and Tezos**.
 
 Every signer takes a private key plus an unsigned transaction (or the fields to build one) and returns a signed payload. Nothing here makes a network call and nothing needs an API key — **the private key never leaves your process.**
 
@@ -79,6 +79,7 @@ Each root export still dynamically imports its own chain on first call, so one c
 | **XRP** | xrp (Ripple) | `/xrp` |
 | **Kaspa** | kaspa | `/kaspa` |
 | **Solana** | solana (partial / fee-payer signing) | `/solana` |
+| **Tezos** | tezos: tz1 (ed25519), tz2 (secp256k1), tz3 (P-256) | `/tezos` |
 
 Both `mainnet` and each chain's testnet are supported. EVM network names map to chain IDs internally (e.g. `base` + `sepolia` → 84532).
 
@@ -113,6 +114,31 @@ Private keys are WIF, one per input, in the same order as the transaction inputs
 | `/kaspa` | `kaspaSignFromDetails` | `{ signedTransaction, transactionId }` |
 | `/solana` | `svmPartialSign` | `{ transaction }` (base64, partially signed) |
 
+### Tezos — `@cryptoapis-io/offline-signer/tezos`
+
+| Function | Input | Returns |
+| --- | --- | --- |
+| `tezosSignForgedOperation` | `{ secretKey, forgedOperation, expected? }` | `{ signature, signatureHex, signedOperation, operationHash, address, publicKey, contents }` |
+| `tezosKeyInfo` | `secretKey` | `{ address, publicKey, curve }` |
+
+`secretKey` is an unencrypted `edsk…` (tz1), `spsk…` (tz2) or `p2sk…` (tz3) key. `forgedOperation` is the hex from
+`POST /prepare-transactions/tezos/{network}/…` (`forgedOperation`); broadcast `signedOperation`.
+
+**It verifies before it signs.** The bytes are decoded and re-forged, and the signer refuses unless they round-trip
+exactly, contain only `reveal`/`transaction` ops, every op's source is the key's own address, a reveal publishes the
+key's own public key, and — when you pass `expected: { destination?, amount?, maxFee? }` — the transaction matches.
+Pass the values **you** requested, so a tampered or buggy prepared operation is refused instead of signed.
+
+```ts
+import { tezosSignForgedOperation } from "@cryptoapis-io/offline-signer/tezos";
+
+const { signedOperation, operationHash } = await tezosSignForgedOperation({
+    secretKey: "edsk…",
+    forgedOperation: prepared.forgedOperation,
+    expected: { destination: "tz1…", amount: "1000000", maxFee: "5000" },
+});
+```
+
 ### Metadata
 
 `getChainIdForNetwork(blockchain, network)`, `BLOCKCHAIN_NETWORKS`, `EVM_BLOCKCHAINS`, `UTXO_BLOCKCHAINS` and the chain/network types are exported from the root and the relevant subpaths — no runtime chain dependencies are loaded to read them.
@@ -141,6 +167,7 @@ npm run build        # → dist/ (ESM + .d.ts)
 npm run typecheck
 npm run test:evm     # EVM signing correctness (recovers sender from signed tx)
 npm run test:utxo    # signs across all six UTXO chains
+npm run test:tezos   # tz1/tz2/tz3 signatures byte-identical to Taquito + the refusal checks
 ```
 
 ## License
