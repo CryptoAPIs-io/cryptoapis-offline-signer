@@ -31,3 +31,6 @@ jobs:
 
       - name: Smoke test — UTXO signing
         run: npm run test:utxo
+
+      - name: Tezos signing
+        run: npm run test:tezos

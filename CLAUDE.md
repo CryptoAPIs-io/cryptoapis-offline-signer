@@ -35,6 +35,8 @@ Public API is defined by the `exports` map in `package.json`: root `.` plus `/ev
 
 - `zcashcore-lib` has an **undeclared runtime dependency on `blake2b`** — it is listed explicitly in `dependencies` for that reason. Do not remove it.
 - Never hand-edit `package.json`/lockfile deps; change them through `npm` commands.
+- **Taquito is pinned to `~23.1`**: 24+ require Node ≥ 22, this package supports Node 20. 23.1 already forges the protocol 022+ reveal (proof-presence byte after the public key); an older forger (≤ 21) produces reveals the node refuses to parse.
+- **Regenerate the lockfile with npm 10** (`npx -y npm@10 install`), the version CI's Node 20 ships. npm 11 drops optional peers like `utf-8-validate` that npm 10's `npm ci` then reports as missing.
 
 ## Verify before publishing
 
