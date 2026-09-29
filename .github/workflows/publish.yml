@@ -5,9 +5,10 @@ name: Publish to npm (with provenance)
 #
 # Trigger: publish a GitHub Release (recommended), or run manually.
 # Requirements:
-#   - Repo secret NPM_TOKEN — a granular automation token for the @cryptoapis-io
-#     org with "Read and write" publish access to the package.
-#   - id-token: write — OIDC, so npm can mint the provenance attestation.
+#   - A trusted publisher on npmjs.com for @cryptoapis-io/offline-signer — this
+#     repo, workflow publish.yml, environment npm-publish. No NPM_TOKEN secret.
+#   - id-token: write — OIDC, so npm can authenticate the publish and mint the
+#     provenance attestation.
 #   - The release tag SHOULD match the package.json version (e.g. v0.1.0).
 
 on:
