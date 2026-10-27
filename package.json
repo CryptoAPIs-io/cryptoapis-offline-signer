@@ -1,6 +1,6 @@
 {
   "name": "@cryptoapis-io/offline-signer",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Offline, local transaction signing for EVM, UTXO, Tron, XRP, Kaspa and Solana — no API calls, no API key, the private key never leaves your process.",
   "license": "MIT",
   "author": "Crypto APIs, Inc.",
@@ -108,6 +108,7 @@
     "clean": "rimraf dist",
     "test:evm": "tsx scripts/test-evm-sign.ts",
     "test:utxo": "tsx scripts/test-utxo-sign.ts",
+    "test:zcash": "tsx scripts/test-zcash-sign.ts",
     "prepublishOnly": "npm run build",
     "test:tezos": "tsx scripts/test-tezos-sign.ts"
   }

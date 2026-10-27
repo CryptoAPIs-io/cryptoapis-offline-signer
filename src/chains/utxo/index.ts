@@ -57,9 +57,14 @@ export function runFromDetails(input: UtxoSignFromDetailsInput): { signedTransac
     const version = item.version ?? 1;
     const locktime = item.locktime ?? undefined;
 
-    // Bitcoin Cash and Zcash have their own tx/sighash formats (SIGHASH_FORKID and
-    // Sapling versionGroupId/consensusBranchId respectively) that bitcoinjs cannot
-    // produce — they are signed by dedicated modules.
+    // The consensus branch ID is a Zcash concept; refuse it elsewhere rather than ignore it.
+    if (input.blockchain !== "zcash" && (input.targetHeight != null || input.consensusBranchId != null)) {
+        throw new Error(`targetHeight and consensusBranchId apply to zcash only, not ${input.blockchain}`);
+    }
+
+    // Bitcoin Cash and Zcash have their own tx/sighash formats (SIGHASH_FORKID, and the
+    // v5 format with the ZIP 244 digest, respectively) that bitcoinjs cannot produce —
+    // they are signed by dedicated modules.
     if (input.blockchain === "bitcoin-cash") {
         return signBchTransaction(input, item);
     }
@@ -173,6 +178,13 @@ function signSegwitFromDetails(
 }
 
 export function runUnsignedHex(input: UtxoSignUnsignedHexInput): { signedTransactionHex: string } {
+    // This path parses and signs as a Bitcoin transaction; a Zcash transaction has a different
+    // format and signature digest, so it would fail to parse or be signed wrongly.
+    if (input.blockchain === "zcash") {
+        throw new Error(
+            "sign-unsigned-hex does not support zcash; use sign-from-details with targetHeight or consensusBranchId",
+        );
+    }
     const hex = input.unsignedTransactionHex.startsWith("0x") ? input.unsignedTransactionHex.slice(2) : input.unsignedTransactionHex;
     const tx = bitcoin.Transaction.fromHex(hex);
     if (tx.ins.length !== input.privateKeys.length || tx.ins.length !== input.inputs.length) {

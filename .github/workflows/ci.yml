@@ -32,5 +32,8 @@ jobs:
       - name: Smoke test — UTXO signing
         run: npm run test:utxo
 
+      - name: Zcash signing (branch ID by height, ZIP 244 vs on-chain txs)
+        run: npm run test:zcash
+
       - name: Tezos signing
         run: npm run test:tezos
