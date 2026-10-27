@@ -16,7 +16,7 @@ src/
   chains/<chain>/     the actual signing cores (index.ts + schema.ts + helpers)
   internal/
     blockchains.ts    vendored chain/network metadata + getChainIdForNetwork + zod enums
-scripts/              tsx smoke tests (test-evm-sign, test-utxo-sign)
+scripts/              tsx tests (test-evm-sign, test-utxo-sign, test-zcash-sign, test-tezos-sign; fixtures/)
 ```
 
 Public API is defined by the `exports` map in `package.json`: root `.` plus `/evm`, `/utxo`, `/tron`, `/xrp`, `/kaspa`, `/solana`, `/tezos`.
@@ -34,6 +34,8 @@ Public API is defined by the `exports` map in `package.json`: root `.` plus `/ev
 ## Gotchas
 
 - `zcashcore-lib` has an **undeclared runtime dependency on `blake2b`** — it is listed explicitly in `dependencies` for that reason. Do not remove it.
+- **Zcash network upgrades need a release.** The signature commits to the consensus branch ID of the block the tx is mined in. `chains/utxo/zcash-network-upgrades.ts` maps a `targetHeight` to it (NU5..NU7, from zebra/librustzcash). Each new upgrade needs a row there, plus the boundary checks in `scripts/test-zcash-sign.ts`, before it activates. Callers can bridge the gap with an explicit `consensusBranchId`. Never reintroduce a default branch ID.
+- **Zcash is signed as v5 with our own ZIP 244 digest** (`chains/utxo/zcash-zip244.ts`). NU7 rejects v4 (ZIP 2003). `@bitgo/utxo-lib`'s v5 digest follows a pre-final ZIP 244 draft (no hash_type, amounts or scriptPubKeys digests; txin fields out of order), and its signatures are invalid on-chain. utxo-lib is still used for WIF decoding, address → script and v5 serialization. The test checks the digest against signatures of v5 transactions mined on mainnet and testnet (`scripts/fixtures/zcash-v5-transparent.json`).
 - Never hand-edit `package.json`/lockfile deps; change them through `npm` commands.
 - **Taquito is pinned to `~23.1`**: 24+ require Node ≥ 22, this package supports Node 20. 23.1 already forges the protocol 022+ reveal (proof-presence byte after the public key); an older forger (≤ 21) produces reveals the node refuses to parse.
 - **Regenerate the lockfile with npm 10** (`npx -y npm@10 install`), the version CI's Node 20 ships. npm 11 drops optional peers like `utf-8-validate` that npm 10's `npm ci` then reports as missing.
@@ -44,7 +46,8 @@ Public API is defined by the `exports` map in `package.json`: root `.` plus `/ev
 npm run build && npm run typecheck
 npm run test:evm     # recovers the sender from the signed tx; asserts it matches
 npm run test:utxo    # signs across all six UTXO chains
+npm run test:zcash   # branch ID by height (every NU boundary), ZIP 244 vs on-chain txs, refusals
 npm run test:tezos   # tz1/tz2/tz3 vs Taquito, refusal checks
 ```
 
-Both smoke tests import from the **built `dist/`**, so run `build` first. They use throwaway keys and touch no network.
+The tests import from the **built `dist/`**, so run `build` first. They use throwaway keys and touch no network.

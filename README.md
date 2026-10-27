@@ -105,6 +105,33 @@ Each function takes a discriminated-union input keyed by `action` and returns th
 
 Private keys are WIF, one per input, in the same order as the transaction inputs.
 
+#### Zcash: `targetHeight` or `consensusBranchId` is required
+
+A Zcash signature commits to the **consensus branch ID** of the block the transaction is mined in, and that ID changes at every network upgrade. The signer never touches the network, so it cannot look the ID up. `sign-from-details` for `zcash` therefore needs exactly one of:
+
+| Input | Meaning |
+| --- | --- |
+| `targetHeight` | Height of the block the transaction should be mined in: the current chain tip + 1. The branch ID comes from the library's network-upgrade table (NU5 → NU7). |
+| `consensusBranchId` | The branch ID itself, e.g. a node's `getblockchaininfo` → `consensus.nextblock` (`parseInt("77190ad9", 16)`). It is used as given, so it also covers an upgrade newer than this release. |
+
+With neither, or both, the call throws. There is no default.
+
+```ts
+const { signedTransactionHex } = utxoSignFromDetails({
+  action: "sign-from-details",
+  blockchain: "zcash",
+  network: "mainnet",
+  privateKeys: [wif],
+  preparedTransaction: preparedItem,
+  targetHeight: tipHeight + 1,  // tip: GET /blocks/utxo/zcash/mainnet/latest → data.items[0].height
+});
+```
+
+- Zcash transactions are built as **version 5** (ZIP 225, ZIP 244 signature digest), which is valid from NU5 through NU7. NU7 rejects version 4 (ZIP 2003). The prepared transaction's `version` is ignored.
+- Only transparent P2PKH (t-address) inputs are supported. `sign-unsigned-hex` does not support Zcash.
+- Sign close to broadcast time. A transaction signed for one upgrade's branch is rejected once the next upgrade activates; re-sign it with the new height.
+- `zcashConsensusBranchIdForHeight(network, height)` from `/utxo` returns the branch ID the signer would use.
+
 ### Tron / XRP / Kaspa / Solana
 
 | Subpath | Function | Returns |
@@ -167,6 +194,7 @@ npm run build        # → dist/ (ESM + .d.ts)
 npm run typecheck
 npm run test:evm     # EVM signing correctness (recovers sender from signed tx)
 npm run test:utxo    # signs across all six UTXO chains
+npm run test:zcash   # branch ID per network upgrade; ZIP 244 digest vs transactions mined on-chain
 npm run test:tezos   # tz1/tz2/tz3 signatures byte-identical to Taquito + the refusal checks
 ```
 

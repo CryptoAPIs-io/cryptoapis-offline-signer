@@ -19,6 +19,10 @@ import { utxoSignFromDetails } from "../dist/utxo.js";
 const ECPair = ECPairFactory(ecc);
 bitcoin.initEccLib(ecc);
 
+// Zcash needs the height the tx will be mined in (it picks the consensus branch ID); this is
+// testnet's NU7 activation. Branch-ID selection itself is covered by test-zcash-sign.ts.
+const ZCASH_TESTNET_TARGET_HEIGHT = 4_465_026;
+
 const CHAINS = [
     { blockchain: "bitcoin", network: "testnet" },
     { blockchain: "litecoin", network: "testnet" },
@@ -67,6 +71,7 @@ for (const { blockchain, network } of CHAINS) {
             network,
             privateKeys: [wif],
             preparedTransaction: prep,
+            ...(blockchain === "zcash" ? { targetHeight: ZCASH_TESTNET_TARGET_HEIGHT } : {}),
         });
         if (!signedTransactionHex || signedTransactionHex.length < 20) {
             throw new Error("empty/short signed hex");
